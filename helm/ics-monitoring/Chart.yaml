@@ -1,0 +1,20 @@
+apiVersion: v2
+name: ics-monitoring
+version: "0.0.1-alpha.1"
+description: Helm chart for monitoring ICS applications.
+type: application
+keywords:
+  - ics
+  - industrial
+  - control
+  - systems
+  - ot
+home: https://github.com/cybertrol-engineering/ics-monitoring-helm
+sources:
+  - https://github.com/cybertrol-engineering/ics-monitoring-helm
+maintainers:
+  - name: alphabet5
+    url: https://github.com/alphabet5
+  - name: tlitke5
+    url: https://github.com/tlitke5
+deprecated: false

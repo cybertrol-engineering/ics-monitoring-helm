@@ -1,0 +1,10 @@
+{{- if .Values.filebeat.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "%s-elastic-filebeat" .Release.Name }}
+  namespace: {{ .Release.Namespace | quote }}
+data:
+  filebeat.yml: |
+{{ tpl .Values.filebeat.config . | indent 4 }}
+{{- end }}
