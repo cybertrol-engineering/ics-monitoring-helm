@@ -19,9 +19,6 @@ data:
     cloud:
       id: ${CLOUDID}
       auth: ${CLOUDAUTH}
-      {- if .Values.global.proxyUrl }
-      proxy_url: { .Values.global.proxyUrl }
-      {- end }
     filebeat.modules:
     - module: cisco
       ios:
@@ -63,9 +60,6 @@ data:
     cloud:
       id: ${CLOUDID}
       auth: ${CLOUDAUTH}
-      {- if .Values.global.proxyUrl }
-      proxy_url: { .Values.global.proxyUrl }
-      {- end }
     metricbeat.modules:
     - module: vsphere
       enabled: true
@@ -116,14 +110,14 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 3a9ce39af76df9a4557c6d1e2510e15329255dac8bfe9461c962cdfcf757c1c6
+        checksum/config: 5bbeaca3a6fa87c3e25c3011906e6324a906ac92594c15a38bcc271157568ecf
         checksum/secret: 7a252edff8d8d1ccd64350c2c9c598f03a949676a07ad8aaf001f4f9f5b3b4e3
       labels:
         app: elastic-filebeat
     spec:
       restartPolicy: "Always"
       containers:
-        - name: name-guacamole
+        - name: name-filebeat
           image: docker.elastic.co/beats/filebeat:8.1.1
           imagePullPolicy: "Always"
           env:
@@ -163,14 +157,14 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 17f208a3fedc1043dc7bbfa36e09aa3f48936cd73c98cec0deed56646ccf7dca
+        checksum/config: f68b0045669e74f12d819ed1c0bab7375901f00796e5de589e9fbcd15112d856
         checksum/secret: cf920608d608a546d6232f24d9aed179cc1c9364ac0d36641678a40c642a2f56
       labels:
         app: elastic-metricbeat
     spec:
       restartPolicy: "Always"
       containers:
-        - name: name-guacamole
+        - name: name-metricbeat
           image: docker.elastic.co/beats/metricbeat:8.1.1
           imagePullPolicy: "Always"
           env:

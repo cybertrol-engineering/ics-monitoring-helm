@@ -31,9 +31,9 @@ metricbeat:
     cloud:
       id: ${CLOUDID}
       auth: ${CLOUDAUTH}
-      {- if .Values.global.proxyUrl }
-      proxy_url: { .Values.global.proxyUrl }
-      {- end }
+    {{- if .Values.global.proxyUrl }}
+      proxy_url: {{ .Values.global.proxyUrl }}
+    {{- end }}
     metricbeat.modules:
     - module: vsphere
       enabled: true
@@ -81,9 +81,9 @@ filebeat:
     cloud:
       id: ${CLOUDID}
       auth: ${CLOUDAUTH}
-      {- if .Values.global.proxyUrl }
-      proxy_url: { .Values.global.proxyUrl }
-      {- end }
+    {{- if .Values.global.proxyUrl }}
+      proxy_url: {{ .Values.global.proxyUrl }}
+    {{- end }}
     filebeat.modules:
     - module: cisco
       ios:
