@@ -1,6 +1,6 @@
 apiVersion: v2
 name: ics-monitoring
-version: "0.0.1-alpha.2"
+version: "0.0.1-alpha.3"
 description: Helm chart for monitoring ICS applications.
 type: application
 keywords:

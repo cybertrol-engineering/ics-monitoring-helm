@@ -19,7 +19,7 @@ spec:
     spec:
       restartPolicy: {{ .Values.filebeat.restartPolicy  | quote }}
       containers:
-        - name: {{ printf "%s-guacamole" .Release.Name }}
+        - name: {{ printf "%s-filebeat" .Release.Name }}
           image: {{ .Values.filebeat.image }}
           imagePullPolicy: {{ .Values.filebeat.imagePullPolicy  | quote }}
           env:

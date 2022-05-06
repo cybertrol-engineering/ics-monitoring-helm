@@ -2,7 +2,7 @@ global:
   secrets: {}
     #   # These secrets are shared between the various elastic components included with this helm chart.
     #   # These secrets are converted to all uppercase environment variables for metricbeat.
-    #   # Secret 'secretName' can be used within the metricbeat config as ${SECRETNAME}
+    #   # Secret 'secretName' can be used within the beat config as ${SECRETNAME}
     #   vSphereUsername: 
     #   vSpherePassword:
     #   cloudId:
@@ -62,23 +62,12 @@ filebeat:
   # elastic.filebeat.loadBalancerIpAddress.
   # If you are listening on both TCP and UDP, you will require different IP addresses for each.
   sharedIp: true
-  proxyUrl: ''
   loadBalancerIpAddressUDP: ""
   loadBalancerIpAddressTCP: ""
   udpPorts:
     - "9002"
     - "9003"
   tcpPorts: []
-  secrets: {}
-  #   # These secrets are converted to all uppercase environment variables.
-  #   # Secret 'secretName' can be used within the metricbeat config as ${SECRETNAME}
-  #   username: 
-  #   password:
-  #   cloudId:
-  #   cloudAuth:
-  #   # elasticHost:
-  #   # elasticUser:
-  #   # elasticPassword:
   config: |
     # This commented out example is useing a self-hosted elasticsearch cluster.
     # By default, elastic cloud is used with cloudId and cloudAuth.

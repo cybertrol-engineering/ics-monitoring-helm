@@ -19,7 +19,7 @@ spec:
     spec:
       restartPolicy: {{ .Values.metricbeat.restartPolicy  | quote }}
       containers:
-        - name: {{ printf "%s-guacamole" .Release.Name }}
+        - name: {{ printf "%s-metricbeat" .Release.Name }}
           image: {{ .Values.metricbeat.image }}
           imagePullPolicy: {{ .Values.metricbeat.imagePullPolicy  | quote }}
           env:
