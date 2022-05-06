@@ -2,6 +2,29 @@ apiVersion: v1
 entries:
   ics-monitoring:
   - apiVersion: v2
+    created: "2022-05-06T17:01:15.861664398Z"
+    description: Helm chart for monitoring ICS applications.
+    digest: bb40f34b801b6100a482c9cb5ca9b3389e282bda96caf3434ab837d11f29ce5b
+    home: https://github.com/cybertrol-engineering/ics-monitoring-helm
+    keywords:
+    - ics
+    - industrial
+    - control
+    - systems
+    - ot
+    maintainers:
+    - name: alphabet5
+      url: https://github.com/alphabet5
+    - name: tlitke5
+      url: https://github.com/tlitke5
+    name: ics-monitoring
+    sources:
+    - https://github.com/cybertrol-engineering/ics-monitoring-helm
+    type: application
+    urls:
+    - https://github.com/cybertrol-engineering/ics-monitoring-helm/releases/download/ics-monitoring-0.0.1-alpha.3/ics-monitoring-0.0.1-alpha.3.tgz
+    version: 0.0.1-alpha.3
+  - apiVersion: v2
     created: "2022-05-06T16:37:26.918195309Z"
     description: Helm chart for monitoring ICS applications.
     digest: ebbd615a398e207145cb79730bcd70950cdb8f944efd15125a4b0c721026abf5
@@ -47,4 +70,4 @@ entries:
     urls:
     - https://github.com/cybertrol-engineering/ics-monitoring-helm/releases/download/ics-monitoring-0.0.1-alpha.1/ics-monitoring-0.0.1-alpha.1.tgz
     version: 0.0.1-alpha.1
-generated: "2022-05-06T16:37:26.918214509Z"
+generated: "2022-05-06T17:01:15.861684998Z"
