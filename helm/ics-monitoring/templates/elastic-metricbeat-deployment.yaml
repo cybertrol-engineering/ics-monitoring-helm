@@ -1,4 +1,4 @@
-{{- if and .Values.enabled .Values.metricbeat.enabled }}
+{{- if .Values.metricbeat.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -23,7 +23,7 @@ spec:
           image: {{ .Values.metricbeat.image }}
           imagePullPolicy: {{ .Values.metricbeat.imagePullPolicy  | quote }}
           env:
-          {{- range $secretname, $secret := .Values.metricbeat.secrets }}
+          {{- range $secretname, $secret := .Values.global.secrets }}
             - name: {{ $secretname | upper }}
               valueFrom:
                 secretKeyRef:

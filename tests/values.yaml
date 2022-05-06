@@ -1,0 +1,19 @@
+global:
+  secrets: 
+    vSphereUsername: your_encrypted_vsphere_username
+    vSpherePassword: your_encrypted_vsphere_password
+metricbeat:
+  enabled: true
+  vSphereHosts: 
+    - https://vcenter.hostname.local/sdk
+filebeat:
+  enabled: true
+  sharedIp: false
+  loadBalancerIpAddressUDP: "192.168.1.2"
+  udpPorts:
+    - "9002"
+    - "9003"
+  tcpPorts: []
+  secrets:
+    cloudId: your_encrypted_cloud_id_here
+    cloudAuth: your_encrypted_cloud_auth_here

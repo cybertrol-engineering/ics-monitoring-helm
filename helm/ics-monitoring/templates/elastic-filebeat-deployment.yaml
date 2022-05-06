@@ -23,7 +23,7 @@ spec:
           image: {{ .Values.filebeat.image }}
           imagePullPolicy: {{ .Values.filebeat.imagePullPolicy  | quote }}
           env:
-          {{- range $secretname, $secret := .Values.filebeat.secrets }}
+          {{- range $secretname, $secret := .Values.global.secrets }}
             - name: {{ $secretname | upper }}
               valueFrom:
                 secretKeyRef:

@@ -1,0 +1,227 @@
+---
+# Source: ics-monitoring/templates/elastic-filebeat-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: name-elastic-filebeat
+  namespace: "namespace"
+data:
+  filebeat.yml: |
+    # This commented out example is useing a self-hosted elasticsearch cluster.
+    # By default, elastic cloud is used with cloudId and cloudAuth.
+    #output.elasticsearch:
+    #  hosts: ["${ELASTICHOST}"]
+    #  username: ${ELASTICUSER}
+    #  password: ${ELASTICPASSWORD}
+    #  ssl:
+    #    enabled: true
+    #    ca_trusted_fingerprint: "b9a10bbe64ee9826abeda6546fc988c8bf798b41957c33d05db736716513dc9c"
+    cloud:
+      id: ${CLOUDID}
+      auth: ${CLOUDAUTH}
+      {- if .Values.global.proxyUrl }
+      proxy_url: { .Values.global.proxyUrl }
+      {- end }
+    filebeat.modules:
+    - module: cisco
+      ios:
+        var.syslog_host: 0.0.0.0
+        var.syslog_port: 9002
+    filebeat.inputs:
+    - type: syslog
+      format: auto
+      protocol.udp:
+        host: "0.0.0.0:9003"
+      processors:
+        - drop_event:
+            when:
+              or:
+                - equals:
+                    syslog.severity_label: Debug
+                - equals:
+                    syslog.severity_label: Informational
+                - equals:
+                    syslog.severity_label: Notice
+---
+# Source: ics-monitoring/templates/elastic-metricbeat-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: name-elastic-metricbeat
+  namespace: "namespace"
+data:
+  metricbeat.yml: |
+    # This commented out example is useing a self-hosted elasticsearch cluster.
+    # By default, elastic cloud is used with cloudId and cloudAuth.
+    #output.elasticsearch:
+    #  hosts: ["${ELASTICHOST}"]
+    #  username: ${ELASTICUSER}
+    #  password: ${ELASTICPASSWORD}
+    #  ssl:
+    #    enabled: true
+    #    ca_trusted_fingerprint: "b9a10bbe64ee9826abeda6546fc988c8bf798b41957c33d05db736716513dc9c"
+    cloud:
+      id: ${CLOUDID}
+      auth: ${CLOUDAUTH}
+      {- if .Values.global.proxyUrl }
+      proxy_url: { .Values.global.proxyUrl }
+      {- end }
+    metricbeat.modules:
+    - module: vsphere
+      enabled: true
+      metricsets: ["datastore", "host", "virtualmachine"]
+      period: 10s
+      hosts: 
+        - https://vcenter.hostname.local/sdk
+      username: ${VSPHEREUSERNAME}
+      password: ${VSPHEREPASSWORD}
+      # If insecure is true, don't verify the server's certificate chain
+      insecure: true
+      # Get custom fields when using virtualmachine metric set. Default false.
+      # get_custom_fields: false
+---
+# Source: ics-monitoring/templates/elastic-filebeat-udp-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: name-elastic-filebeat-udp
+  namespace: "namespace"
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 192.168.1.2
+  externalTrafficPolicy: Local
+  ports:
+    - protocol: UDP
+      port: 9002
+      targetPort: 9002
+      name: udp-9002
+    - protocol: UDP
+      port: 9003
+      targetPort: 9003
+      name: udp-9003
+  selector:
+    app: elastic-filebeat
+---
+# Source: ics-monitoring/templates/elastic-filebeat-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: name-elastic-filebeat
+  namespace: "namespace"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elastic-filebeat
+  template:
+    metadata:
+      annotations:
+        checksum/config: 3a9ce39af76df9a4557c6d1e2510e15329255dac8bfe9461c962cdfcf757c1c6
+        checksum/secret: 7a252edff8d8d1ccd64350c2c9c598f03a949676a07ad8aaf001f4f9f5b3b4e3
+      labels:
+        app: elastic-filebeat
+    spec:
+      restartPolicy: "Always"
+      containers:
+        - name: name-guacamole
+          image: docker.elastic.co/beats/filebeat:8.1.1
+          imagePullPolicy: "Always"
+          env:
+            - name: VSPHEREPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: name-elastic-filebeat
+                  key: vSpherePassword
+            - name: VSPHEREUSERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: name-elastic-filebeat
+                  key: vSphereUsername
+          volumeMounts:
+            - name: name-elastic-filebeat-volume
+              mountPath: "/usr/share/filebeat/filebeat.yml"
+              subPath: "filebeat.yml"
+      volumes:
+        - name: name-elastic-filebeat-volume
+          configMap:
+            name: name-elastic-filebeat
+            items:
+            - key: filebeat.yml
+              path: filebeat.yml
+---
+# Source: ics-monitoring/templates/elastic-metricbeat-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: name-elastic-metricbeat
+  namespace: "namespace"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elastic-metricbeat
+  template:
+    metadata:
+      annotations:
+        checksum/config: 17f208a3fedc1043dc7bbfa36e09aa3f48936cd73c98cec0deed56646ccf7dca
+        checksum/secret: cf920608d608a546d6232f24d9aed179cc1c9364ac0d36641678a40c642a2f56
+      labels:
+        app: elastic-metricbeat
+    spec:
+      restartPolicy: "Always"
+      containers:
+        - name: name-guacamole
+          image: docker.elastic.co/beats/metricbeat:8.1.1
+          imagePullPolicy: "Always"
+          env:
+            - name: VSPHEREPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: name-elastic-metricbeat
+                  key: vSpherePassword
+            - name: VSPHEREUSERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: name-elastic-metricbeat
+                  key: vSphereUsername
+          volumeMounts:
+            - name: name-elastic-metricbeat-volume
+              mountPath: "/usr/share/metricbeat/metricbeat.yml"
+              subPath: "metricbeat.yml"
+      volumes:
+        - name: name-elastic-metricbeat-volume
+          configMap:
+            name: name-elastic-metricbeat
+            items:
+            - key: metricbeat.yml
+              path: metricbeat.yml
+---
+# Source: ics-monitoring/templates/elastic-filebeat-secret.yaml
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  name: name-elastic-filebeat
+  namespace: "namespace"
+  annotations:
+    sealedsecrets.bitnami.com/cluster-wide: 'true'
+spec:
+  encryptedData:
+    vSpherePassword: your_encrypted_vsphere_password
+    vSphereUsername: your_encrypted_vsphere_username
+  template:
+    type: Opaque
+---
+# Source: ics-monitoring/templates/elastic-metricbeat-secret.yaml
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  name: name-elastic-metricbeat
+  namespace: "namespace"
+  annotations:
+    sealedsecrets.bitnami.com/cluster-wide: 'true'
+spec:
+  encryptedData:
+    vSpherePassword: your_encrypted_vsphere_password
+    vSphereUsername: your_encrypted_vsphere_username
+  template:
+    type: Opaque
